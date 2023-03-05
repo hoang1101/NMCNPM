@@ -17,3 +17,12 @@ module.exports.TE = function (err_message, log) {
   }
   throw new Error(err_message);
 };
+
+module.exports.SS = function (res, data, satus = 200) {
+  let send_data = { success: true };
+  if (typeof data == "object") {
+    send_data = Object.assign(data, send_data); //merge the objects
+  }
+  if (typeof code !== "undefined") res.satus = satus;
+  return res.json(send_data);
+};

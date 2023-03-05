@@ -30,8 +30,26 @@ exports.verifyAdmin = (req, res, next) => {
       },
     });
 
-    console.log(taikhoan.Quyen);
-    if (taikhoan.Quyen === "admin") {
+    console.log(taikhoan.MaQuyen);
+    if (taikhoan.MaQuyen === 1) {
+      next();
+    } else {
+      res.status(403).json("You are not permission!");
+    }
+  });
+};
+
+exports.verifyManager = (req, res, next) => {
+  this.verifyToken(req, res, async () => {
+    const data = req.taikhoan.TenTaiKhoan;
+    const taikhoan = await db.TaiKhoan.findOne({
+      where: {
+        TenTaiKhoan: data,
+      },
+    });
+
+    console.log(taikhoan.MaQuyen);
+    if (taikhoan.MaQuyen === 2) {
       next();
     } else {
       res.status(403).json("You are not permission!");

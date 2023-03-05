@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
       },
       NgayQD: {
-        type: DataTypes.DATEONLY,
+        type: DataTypes.DATE,
       },
       LiDo: {
         type: DataTypes.STRING,

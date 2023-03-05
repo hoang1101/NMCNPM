@@ -4,12 +4,13 @@ module.exports = (sequelize, DataTypes) => {
     "BacLuong",
     {
       MaBac: {
-        type: DataTypes.STRING,
-        // autoIncrement: true,
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
         primaryKey: true,
       },
       HeSo: {
         type: DataTypes.FLOAT,
+        unique: true,
       },
     },
     {

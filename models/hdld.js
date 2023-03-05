@@ -12,13 +12,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
       },
       NgayBatDau: {
-        type: DataTypes.DATEONLY,
+        type: DataTypes.DATE,
       },
       NgayKetThuc: {
-        type: DataTypes.DATEONLY,
+        type: DataTypes.DATE,
       },
       NgayKy: {
-        type: DataTypes.DATEONLY,
+        type: DataTypes.DATE,
       },
       LCB: {
         type: DataTypes.INTEGER,

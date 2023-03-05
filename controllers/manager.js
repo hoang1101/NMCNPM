@@ -1,5 +1,8 @@
+const moment = require("moment/moment");
+const { Op, where } = require("sequelize");
+const { sequelize } = require("../models");
 const db = require("../models");
-const { ReE, ReS } = require("./util.service");
+const { ReE, ReS, SS, TE } = require("./util.service");
 
 /// =============== HOC VAN ================= ///
 // tao hoc van moi
@@ -224,40 +227,37 @@ exports.createNV = async (req, res) => {
         msg: "Missing Input!",
       });
     } else {
-      const y = await db.NhanVien.findOne({
-        where: { CCCD },
-      });
-      if (y != null) {
-        return res.status(400).json({
-          success: false,
-          msg: "Bi trung cccd",
-        });
-      }
-
-      const z = await db.NhanVien.findOne({
-        where: {
-          SDT,
-        },
-      });
-      if (z != null) {
-        return res.status(400).json({
-          success: false,
-          msg: "Bi trung sdt",
-        });
-      }
-
-      const k = await db.NhanVien.findOne({
-        where: {
-          Email,
-        },
-      });
-      if (k != null) {
-        return res.status(400).json({
-          success: false,
-          msg: "Bi trung Email",
-        });
-      }
-
+      // const y = await db.NhanVien.findOne({
+      //   where: { CCCD },
+      // });
+      // if (y != null) {
+      //   return res.status(400).json({
+      //     success: false,
+      //     msg: "Bi trung cccd",
+      //   });
+      // }
+      // const z = await db.NhanVien.findOne({
+      //   where: {
+      //     SDT,
+      //   },
+      // });
+      // if (z != null) {
+      //   return res.status(400).json({
+      //     success: false,
+      //     msg: "Bi trung sdt",
+      //   });
+      // }
+      // const k = await db.NhanVien.findOne({
+      //   where: {
+      //     Email,
+      //   },
+      // });
+      // if (k != null) {
+      //   return res.status(400).json({
+      //     success: false,
+      //     msg: "Bi trung Email",
+      //   });
+      // }
       const r = await db.NhanVien.findOne({
         where: { MaNV },
       });
@@ -281,6 +281,16 @@ exports.createNV = async (req, res) => {
             MaHocVan,
           },
         });
+        const currentdatetime = new Date(Date.now());
+        const dulieu = currentdatetime.getMonth() + 1;
+        const dulieunam = currentdatetime.getFullYear();
+        const l = await db.PhieuLuong.create({
+          MaNV,
+          ThangTL: dulieu,
+          NamTL: dulieunam,
+          LCB: 1800000,
+        });
+
         return res.status(200).json({
           success: true,
           msg: "Tao thanh cong",
@@ -296,7 +306,7 @@ exports.createNV = async (req, res) => {
     return res.status(500).json({
       success: false,
       error: -1,
-      msg: "Fail at auth controller:" + error,
+      msg: "Du lieu nhap vao bi trung" + error,
     });
   }
 };
@@ -344,7 +354,7 @@ exports.editNV = async (req, res) => {
       });
       console.log(g);
       if (g != null) {
-        const x = await db.NhanVien.update(
+        let x = await db.NhanVien.update(
           {
             MaChucVu,
             HoTen,
@@ -363,7 +373,7 @@ exports.editNV = async (req, res) => {
         );
         return ReS(res, 200, "TaoThanhCong");
       } else {
-        const x = await db.NhanVien.update(
+        let x = await db.NhanVien.update(
           {
             MaChucVu,
             HoTen,
@@ -396,20 +406,453 @@ exports.delNV = async (req, res) => {
   } catch (error) {}
 };
 
-/// ============================ Tao Hop Dong ============================= ///
-//
-exports.createHD = async (req, res) => {
-  try {
-    const { MaHDLD, MaNV, NgayBatDau, NgayKetThuc, NgayKy } = req.body;
-
-    const x = await db.HDLD.create({});
-  } catch (error) {}
-};
-
 /// ========================= Bac luong =================================== ///
 //Tao ma bac
 
 exports.createMB = async (req, res) => {
   try {
-  } catch (error) {}
+    const { HeSo } = req.body;
+    if (!HeSo) {
+      return ReE(res, 404, "Khong the bo trong he so");
+    } else {
+      const x = await db.BacLuong.create({
+        HeSo,
+      });
+      return ReS(res, 200, "Tao thanh cong");
+    }
+  } catch (error) {
+    return ReE(res, 500, error);
+  }
 };
+
+// chinh sua ma bac
+
+exports.editMB = async (req, res) => {
+  try {
+    const { MaBac } = req.params;
+    const { HeSo } = req.body;
+    if (!HeSo) {
+      ReE(res, 404, "Khong the bo trong HeSo");
+    } else {
+      let x = await db.HDLD.findOne({
+        where: {
+          MaBac,
+        },
+      });
+      console.log(x);
+      if (x === null) {
+        x = await db.BacLuong.update(
+          {
+            HeSo,
+          },
+          {
+            where: { MaBac },
+          }
+        );
+        return ReS(res, 200, "Update thanh cong");
+      }
+    }
+  } catch (error) {
+    return ReE(res, 500, error);
+  }
+};
+// xoa ma bac
+exports.delMB = async (req, res) => {
+  try {
+    const { MaBac } = req.params;
+    let x = await db.HDLD.findOne({
+      where: {
+        MaBac,
+      },
+    });
+    if (x === null) {
+      x = await db.BacLuong.destroy({
+        where: { MaBac },
+      });
+      return ReS(res, 200, "Xoa thanh cong");
+    }
+  } catch (error) {
+    return ReE(res, 500, error);
+  }
+};
+
+/// ========================== KTKL ============================ ///
+// tao mot KTKL
+exports.createKTKL = async (req, res) => {
+  try {
+    const { MaNV, HinhThuc, NgayQD, LiDo, SoTien } = req.body;
+    if (!MaNV || !HinhThuc || !LiDo || !SoTien) {
+      return ReE(res, 400, "Khong the de trong");
+    } else {
+      const x = await db.KTKL.create({
+        MaNV,
+        HinhThuc,
+        NgayQD: Date.now(),
+        LiDo,
+        SoTien,
+      });
+      // console.log(HinhThuc);
+      // console.log(SoTien);
+      // const q = await db.PhieuLuong.findOne({
+      //   MaNV,
+      // });
+      // const data = q.TienKTKL;
+      // if (HinhThuc != 1) {
+      //   let z = await db.PhieuLuong.update(
+      //     {
+      //       TienKTKL: data - SoTien,
+      //     },
+      //     { where: { MaNV } }
+      //   );
+      //   return ReS(res, 200, "TaoThanhCong");
+      // } else {
+      //   let p = await db.PhieuLuong.update(
+      //     {
+      //       TienKTKL: data + SoTien,
+      //     },
+      //     { where: { MaNV } }
+      //   );
+      return ReS(res, 200, "TaoThanhCong");
+      // }
+    }
+    // }
+  } catch (error) {
+    ReE(res, 500, error);
+  }
+};
+
+// chinh sua mot ktkl
+exports.editKTKL = async (req, res) => {
+  try {
+    const { SoQD } = req.params;
+    const { MaNV, HinhThuc, LiDo, SoTien, NgayQD } = req.body;
+    const dulieu = new Date();
+    const dulieutrue = dulieu.getMonth() + 1;
+    const y = await db.KTKL.findOne({
+      where: { SoQD },
+    });
+    // console.log(dulieutrue);
+    // console.log(y.NgayQD.getMonth() + 1, dulieutrue);
+    if (y.NgayQD.getMonth() === dulieu.getMonth()) {
+      let x = await db.KTKL.update(
+        { MaNV, HinhThuc, LiDo, SoTien, NgayQD: Date.now() },
+        {
+          where: {
+            SoQD,
+          },
+        }
+      );
+      return ReS(res, 200, "Capnhatthanhcong");
+    } else {
+      return ReE(res, 400, "khoong the cap nhat");
+    }
+  } catch (error) {
+    return ReE(res, 500, error);
+  }
+};
+
+// xoa mot ktkl
+exports.delKTKL = async (req, res) => {
+  try {
+    const { SoQD } = req.params;
+    const dulieu = new Date();
+    const y = await db.KTKL.findOne({
+      where: { SoQD },
+    });
+    // console.log(dulieutrue);
+    // console.log(y.NgayQD.getMonth() + 1, dulieutrue);
+    if (y.NgayQD.getMonth() === dulieu.getMonth()) {
+      let x = await db.KTKL.destroy({
+        where: {
+          SoQD,
+        },
+      });
+      return ReS(res, 200, "Xoathanhcong");
+    } else {
+      return ReE(res, 400, "Xoakhongthanhcong");
+    }
+  } catch (error) {
+    return ReE(res, 500, error);
+  }
+};
+/// ========================= HDLD ============================ ///
+//tao hop dong lao dong
+exports.createHDLD = async (req, res) => {
+  try {
+    const { MaNV, NgayBatDau, NgayKetThuc, MaBac, NgayKy, LCB } = req.body;
+    if (!MaNV || !NgayBatDau || !NgayKetThuc || !MaBac) {
+      return ReE(res, 400, "MissingInput");
+    } else {
+      const dulieu = new Date();
+      const NBD = new Date(NgayBatDau);
+      const NKT = new Date(NgayKetThuc);
+      console.log(NBD >= dulieu);
+      // console.log(NBD.getMonth(), NKT.getMonth(), dulieu.getMonth());
+      if (NBD > NKT && NBD >= dulieu) {
+        return ReE(res, 400, "Loi ngay bat dau lon hon");
+      } else {
+        const x = await db.HDLD.create({
+          MaNV,
+          NgayBatDau,
+          NgayKetThuc,
+          MaBac,
+          NgayKy: Date(),
+          LCB: 1800000,
+        });
+        return ReS(res, 200, "Tao thanh cong");
+      }
+    }
+  } catch (error) {
+    return ReE(res, 500, error);
+  }
+};
+
+// chinh sua hop dong
+exports.editHDLD = async (req, res) => {
+  try {
+    const { MaHDLD } = req.params;
+    const { MaNV, NgayBatDau, NgayKetThuc, MaBac, NgayKy, LCB } = req.body;
+    if (!MaNV || !NgayBatDau || !NgayKetThuc || !MaBac) {
+      return ReE(res, 400, "MissingInput");
+    } else {
+      const x = await db.HDLD.findOne({
+        where: { MaHDLD },
+      });
+      console.log(x.NgayBatDau);
+      if (x.NgayBatDau < new Date()) {
+        return ReE(res, 400, "Khong the chinh sua");
+      } else {
+        const NBD = new Date(NgayBatDau);
+        const NKT = new Date(NgayKetThuc);
+        if (NBD > NKT && NBD >= new Date()) {
+          return ReE(res, 400, "Loi ngay bat dau lon hon");
+        } else {
+          const y = await db.HDLD.update(
+            {
+              MaNV,
+              NgayBatDau,
+              NgayKetThuc,
+              MaBac,
+              NgayKy,
+            },
+            { where: { MaHDLD } }
+          );
+          return ReS(res, 200, "Update thanh cong");
+        }
+      }
+    }
+  } catch (error) {
+    return ReE(res, 500, error);
+  }
+};
+
+/// ================= PieuLuong ===================== ///
+//taophieuluong
+exports.createPL = async (req, res) => {
+  try {
+    const {
+      MaNV,
+      ThangTL,
+      NamTL,
+      NgayLap,
+      SoNgayCong,
+      SoNgayNghi,
+      TienUng,
+      TienKTKL,
+      SoTienLinh,
+    } = req.body;
+    if (!MaNV || !SoNgayCong || !SoNgayNghi || !TienUng) {
+      return ReE(res, 400, "MissingInput!");
+    } else {
+      const y = await db.HDLD.findOne({
+        where: { MaNV },
+        attributes: ["MaBac", "LCB"],
+      });
+      if (y === null) {
+        return ReE(res, 400, "Ban chua co hop dong");
+      }
+      console.log(y.MaBac);
+      const z = await db.BacLuong.findOne({
+        where: { MaBac: y.MaBac },
+        attributes: ["HeSo"],
+      });
+      if (z === null) {
+        return ReE(res, 400, "Ban chua co hop dong");
+      }
+      console.log(z.HeSo);
+
+      const k = await db.KTKL.findAll({
+        where: {
+          MaNV,
+        },
+      });
+      // console.log(k);
+
+      let tong = 0;
+      const thang = new Date().getMonth() + 1;
+      for (let i of k) {
+        console.log(thang, i.dataValues.NgayQD.getMonth() + 1);
+        if (
+          i.dataValues.NgayQD.getMonth() + 1 === thang &&
+          i.dataValues.HinhThuc === true
+        ) {
+          tong += i.dataValues.SoTien;
+        } else {
+          tong -= i.dataValues.SoTien;
+        }
+      }
+      // console.log("tong:", tong, y, z);
+      const x =
+        y.LCB * z.HeSo +
+        tong -
+        TienUng -
+        SoNgayNghi * ((y.LCB * z.HeSo) / 30) +
+        (SoNgayCong - 26) * ((y.LCB * z.HeSo) / 30);
+      const haha = await db.PhieuLuong.create({
+        MaNV,
+        ThangTL: new Date().getMonth() + 1,
+        NamTL: new Date().getFullYear(),
+        LCB: y.LCB,
+        NgayLap: new Date(),
+        SoNgayCong,
+        SoNgayNghi,
+        TienUng,
+        TienKTKL: tong,
+        SoTienLinh: x,
+      });
+      console.log(
+        MaNV,
+        ThangTL,
+        NamTL,
+        NgayLap,
+        SoNgayCong,
+        SoNgayNghi,
+        TienUng,
+        TienKTKL,
+        SoTienLinh,
+        x
+      );
+      return ReS(res, 200, "Tao thanh cong");
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: -1,
+      msg: error,
+    });
+  }
+};
+// chinh sua phieu luong
+exports.editPL = async (req, res) => {
+  try {
+    const { MaNV1, ThangTL1, NamTL1 } = req.params;
+    const {
+      SoNgayCong,
+      SoNgayNghi,
+      TienUng,
+      MaNV,
+      ThangTL,
+      NamTL,
+      TienKTKL,
+      SoTienLinh,
+    } = req.body;
+    if (!MaNV || !SoNgayCong || !SoNgayNghi || !TienUng || !ThangTL || !NamTL) {
+      return ReE(res, 400, "MissingInput!");
+    } else {
+      const y = await db.HDLD.findOne({
+        where: { MaNV },
+        attributes: ["MaBac", "LCB"],
+      });
+      if (y === null) {
+        return ReE(res, 400, "Ban chua co hop dong");
+      }
+      console.log(y.MaBac);
+      const z = await db.BacLuong.findOne({
+        where: { MaBac: y.MaBac },
+        attributes: ["HeSo"],
+      });
+      if (z === null) {
+        return ReE(res, 400, "Ban chua co hop dong");
+      }
+      console.log(z.HeSo);
+      const k = await db.KTKL.findAll({
+        where: {
+          MaNV,
+        },
+      });
+      // console.log(k);
+
+      let tong = 0;
+      const thang = new Date().getMonth();
+      for (let i of k) {
+        console.log(ThangTL, i.dataValues.NgayQD.getMonth() + 1);
+        if (
+          i.dataValues.NgayQD.getMonth() + 1 === ThangTL &&
+          i.dataValues.HinhThuc === true
+        ) {
+          tong += i.dataValues.SoTien;
+        } else {
+          tong -= i.dataValues.SoTien;
+        }
+      }
+      console.log("tong:", tong, y, z);
+      const x =
+        y.LCB * z.HeSo +
+        tong -
+        TienUng -
+        SoNgayNghi * ((y.LCB * z.HeSo) / 30) +
+        (SoNgayCong - 26) * ((y.LCB * z.HeSo) / 30);
+      const haha = await db.PhieuLuong.update(
+        {
+          MaNV,
+          ThangTL,
+          NamTL,
+          LCB: y.LCB,
+          SoNgayCong,
+          SoNgayNghi,
+          TienUng,
+          TienKTKL: tong,
+          SoTienLinh: x,
+        },
+        {
+          where: {
+            MaNV: MaNV1,
+            ThangTL: ThangTL1,
+            NamTL: NamTL1,
+          },
+        }
+      );
+      return ReS(res, 200, "Tao thanh cong");
+    }
+  } catch (error) {
+    return ReE(res, 200, error);
+  }
+};
+
+/// ================================ LOC ================================== ///
+// loc nhan vien NKT < ngay hien tai (HDLD MANV)
+exports.getNVHD = async (req, res) => {
+  try {
+    const x = await db.HDLD.findAll({
+      NgayKetThuc: {
+        [Op.lt]: new Date(),
+      },
+      //gt lon hon //lt nho hon
+
+      // NgayBatDau: {
+      //   [Op.ep]: NgayKetThuc,
+      // },
+
+      attributes: ["MaNV"],
+    });
+    // console.log(NgayKetThuc);
+    return SS(res, x, 200);
+  } catch (error) {
+    return res.status(500).json({
+      error: -1,
+      msg: error,
+    });
+  }
+};
+
+/// loc cac nhan vien da co hop dong hoat dong
