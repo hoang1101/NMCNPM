@@ -11,7 +11,7 @@ const router = require("express").Router();
 
 router.post("/register", verifyAdmin, register);
 router.get("/acountlist", acountlist);
-router.put("/update/:TaiKhoanOld", acountEdit);
+router.put("/update/:MaNV", acountEdit);
 
 router.put("/acountlock/:MaNV", acountLock);
 router.put("/acountunlock/:MaNV", acountUnlock);

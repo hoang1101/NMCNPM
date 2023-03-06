@@ -107,6 +107,16 @@ exports.delHocVan = async (req, res) => {
   }
 };
 
+// lấy ra danh sách học vấn
+exports.DSHV = async (req, res) => {
+  try {
+    const x = await db.HocVan.findAll({});
+    return SS(res, x, 200);
+  } catch (error) {
+    return ReE(res, 500, "Fali");
+  }
+};
+
 /// =================== Chuc Vu ======================= ///
 // tao mot chuc vu
 exports.createCV = async (req, res) => {
@@ -190,6 +200,16 @@ exports.delCV = async (req, res) => {
       });
     }
   } catch (error) {}
+};
+
+// lấy ra danh sách học vấn
+exports.DSCV = async (req, res) => {
+  try {
+    const x = await db.ChucVu.findAll({});
+    return SS(res, x, 200);
+  } catch (error) {
+    return ReE(res, 500, "Fali");
+  }
 };
 
 /// =========================== Nhan Vien ================================ ///
@@ -352,8 +372,9 @@ exports.editNV = async (req, res) => {
           Email,
         },
       });
-      console.log(g);
+      // console.log(g);
       if (g != null) {
+        console.log("a1");
         let x = await db.NhanVien.update(
           {
             MaChucVu,
@@ -373,6 +394,7 @@ exports.editNV = async (req, res) => {
         );
         return ReS(res, 200, "TaoThanhCong");
       } else {
+        console.log("a");
         let x = await db.NhanVien.update(
           {
             MaChucVu,
@@ -856,3 +878,65 @@ exports.getNVHD = async (req, res) => {
 };
 
 /// loc cac nhan vien da co hop dong hoat dong
+exports.NVHD = async (req, res) => {
+  try {
+    const x = await db.NhanVien.findAll({
+      include: {
+        model: db.TaiKhoan,
+        as: "taikhoan",
+        where: { HoatDong: 1 },
+        attributes: [],
+      },
+      include: {
+        model: db.HDLD,
+        as: "hdld",
+        where: {
+          NgayKetThuc: {
+            [Op.gt]: new Date(),
+          },
+        },
+        attributes: [],
+      },
+      // attributes: [],
+    });
+    return SS(res, x, 200);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: -1,
+      msg: "Fail" + error,
+    });
+  }
+};
+
+// cac nhan vien khong con hoat dong
+exports.NVKHD = async (req, res) => {
+  try {
+    const x = await db.NhanVien.findAll({
+      include: {
+        model: db.TaiKhoan,
+        as: "taikhoan",
+        where: { HoatDong: 1 },
+        attributes: [],
+      },
+      include: {
+        model: db.HDLD,
+        as: "hdld",
+        where: {
+          NgayKetThuc: {
+            [Op.lt]: new Date(),
+          },
+        },
+        attributes: [],
+      },
+      // attributes: [],
+    });
+    return SS(res, x, 200);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: -1,
+      msg: "Fail" + error,
+    });
+  }
+};
