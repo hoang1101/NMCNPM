@@ -301,15 +301,15 @@ exports.createNV = async (req, res) => {
             MaHocVan,
           },
         });
-        const currentdatetime = new Date(Date.now());
-        const dulieu = currentdatetime.getMonth() + 1;
-        const dulieunam = currentdatetime.getFullYear();
-        const l = await db.PhieuLuong.create({
-          MaNV,
-          ThangTL: dulieu,
-          NamTL: dulieunam,
-          LCB: 1800000,
-        });
+        // const currentdatetime = new Date(Date.now());
+        // const dulieu = currentdatetime.getMonth() + 1;
+        // const dulieunam = currentdatetime.getFullYear();
+        // const l = await db.PhieuLuong.create({
+        //   MaNV,
+        //   ThangTL: dulieu,
+        //   NamTL: dulieunam,
+        //   LCB: 1800000,
+        // });
 
         return res.status(200).json({
           success: true,
