@@ -230,7 +230,6 @@ exports.createNV = async (req, res) => {
       MaHocVan,
     } = req.body;
     if (
-      !MaNV ||
       !MaChucVu ||
       !HoTen ||
       !NgaySinh ||
@@ -278,50 +277,46 @@ exports.createNV = async (req, res) => {
       //     msg: "Bi trung Email",
       //   });
       // }
-      const r = await db.NhanVien.findOne({
-        where: { MaNV },
+      const r = await db.TaiKhoan.create({
+        MaNV,
       });
-      console.log(r);
-      if (r === null) {
-        const x = await db.NhanVien.findOrCreate({
-          where: {
-            MaNV,
-          },
-          defaults: {
-            MaNV,
-            MaChucVu,
-            HoTen,
-            NgaySinh,
-            GioiTinh,
-            CCCD,
-            SDT,
-            Email,
-            DiaChi,
-            QueQuan,
-            MaHocVan,
-          },
-        });
-        const currentdatetime = new Date(Date.now());
-        const dulieu = currentdatetime.getMonth() + 1;
-        const dulieunam = currentdatetime.getFullYear();
-        const l = await db.PhieuLuong.create({
+      const x = await db.NhanVien.findOrCreate({
+        where: {
           MaNV,
-          ThangTL: dulieu,
-          NamTL: dulieunam,
-          LCB: 1800000,
-        });
+        },
+        defaults: {
+          MaNV,
+          MaChucVu,
+          HoTen,
+          NgaySinh,
+          GioiTinh,
+          CCCD,
+          SDT,
+          Email,
+          DiaChi,
+          QueQuan,
+          MaHocVan,
+        },
+      });
+      const currentdatetime = new Date(Date.now());
+      const dulieu = currentdatetime.getMonth() + 1;
+      const dulieunam = currentdatetime.getFullYear();
+      const l = await db.PhieuLuong.create({
+        MaNV,
+        ThangTL: dulieu,
+        NamTL: dulieunam,
+        LCB: 1800000,
+      });
 
-        return res.status(200).json({
-          success: true,
-          msg: "Tao thanh cong",
-        });
-      } else {
-        return res.status(400).json({
-          success: false,
-          msg: "Bi trung ma nhan vien",
-        });
-      }
+      return res.status(200).json({
+        success: true,
+        msg: "Tao thanh cong",
+      });
     }
+    return res.status(400).json({
+      success: false,
+      msg: "Bi trung ma nhan vien",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
