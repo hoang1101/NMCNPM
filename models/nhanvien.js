@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         unique: true,
         validate: {
-          len: [13, 13],
+          len: [12, 12],
         },
       },
       SDT: {

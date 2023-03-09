@@ -248,32 +248,39 @@ exports.createNV = async (req, res) => {
       const r = await db.TaiKhoan.create({
         HoatDong: "1",
       });
-      const kt = await db.TaiKhoan.findOne({
-        where: { TenTaiKhoan: null },
-      });
-      console.log(kt);
-      const x = await db.NhanVien.findOrCreate({
-        where: {
-          MaNV: kt.MaNV,
-        },
-        defaults: {
-          MaNV: kt.MaNV,
-          MaChucVu,
-          HoTen,
-          NgaySinh,
-          GioiTinh,
-          CCCD,
-          SDT,
-          Email,
-          DiaChi,
-          QueQuan,
-          MaHocVan,
-        },
-      });
-      return res.status(200).json({
-        success: true,
-        msg: "Tao thanh cong",
-      });
+      if (r !== null) {
+        // const kt = await db.TaiKhoan.findOne({
+        //   where: { TenTaiKhoan: null },
+        // });
+        // console.log(kt);
+        const x = await db.NhanVien.findOrCreate({
+          where: {
+            MaNV: r.MaNV,
+          },
+          defaults: {
+            MaNV: r.MaNV,
+            MaChucVu,
+            HoTen,
+            NgaySinh,
+            GioiTinh,
+            CCCD,
+            SDT,
+            Email,
+            DiaChi,
+            QueQuan,
+            MaHocVan,
+          },
+        });
+        return res.status(200).json({
+          success: true,
+          msg: "Tao thanh cong",
+        });
+      } else {
+        return res.status(200).json({
+          success: false,
+          msg: "Tao that bai",
+        });
+      }
     }
   } catch (error) {
     return res.status(500).json({
