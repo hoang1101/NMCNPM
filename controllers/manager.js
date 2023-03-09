@@ -217,7 +217,6 @@ exports.DSCV = async (req, res) => {
 exports.createNV = async (req, res) => {
   try {
     const {
-      MaNV,
       MaChucVu,
       HoTen,
       NgaySinh,
@@ -246,46 +245,19 @@ exports.createNV = async (req, res) => {
         msg: "Missing Input!",
       });
     } else {
-      // const y = await db.NhanVien.findOne({
-      //   where: { CCCD },
-      // });
-      // if (y != null) {
-      //   return res.status(400).json({
-      //     success: false,
-      //     msg: "Bi trung cccd",
-      //   });
-      // }
-      // const z = await db.NhanVien.findOne({
-      //   where: {
-      //     SDT,
-      //   },
-      // });
-      // if (z != null) {
-      //   return res.status(400).json({
-      //     success: false,
-      //     msg: "Bi trung sdt",
-      //   });
-      // }
-      // const k = await db.NhanVien.findOne({
-      //   where: {
-      //     Email,
-      //   },
-      // });
-      // if (k != null) {
-      //   return res.status(400).json({
-      //     success: false,
-      //     msg: "Bi trung Email",
-      //   });
-      // }
       const r = await db.TaiKhoan.create({
-        MaNV,
+        HoatDong: "1",
       });
+      const kt = await db.TaiKhoan.findOne({
+        where: { TenTaiKhoan: null },
+      });
+      console.log(kt);
       const x = await db.NhanVien.findOrCreate({
         where: {
-          MaNV,
+          MaNV: kt.MaNV,
         },
         defaults: {
-          MaNV,
+          MaNV: kt.MaNV,
           MaChucVu,
           HoTen,
           NgaySinh,
@@ -298,25 +270,11 @@ exports.createNV = async (req, res) => {
           MaHocVan,
         },
       });
-      const currentdatetime = new Date(Date.now());
-      const dulieu = currentdatetime.getMonth() + 1;
-      const dulieunam = currentdatetime.getFullYear();
-      const l = await db.PhieuLuong.create({
-        MaNV,
-        ThangTL: dulieu,
-        NamTL: dulieunam,
-        LCB: 1800000,
-      });
-
       return res.status(200).json({
         success: true,
         msg: "Tao thanh cong",
       });
     }
-    return res.status(400).json({
-      success: false,
-      msg: "Bi trung ma nhan vien",
-    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -1032,16 +990,16 @@ exports.NVCHD = async (req, res) => {
 
 exports.NVNIF = async (req, res) => {
   try {
-    const x = await db.TaiKhoan.findAll({
+    const x = await db.NhanVien.findAll({
       include: [
         {
-          model: db.NhanVien,
+          model: db.TaiKhoan,
           required: false,
-          as: "nhanvien",
+          as: "taikhoan",
         },
       ],
       where: {
-        "$NhanVien.MaNV$": null,
+        "$TaiKhoan.TenTaiKhoan$": null,
       },
     });
     return SS(res, x, 200);

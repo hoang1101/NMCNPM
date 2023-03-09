@@ -3,12 +3,15 @@ const TaiKhoan = require("../models/taikhoan");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { ReE, SS } = require("./util.service");
+const { Op } = require("sequelize");
 require("dotenv").config();
 
 // danh sach cac tai khoan
 exports.acountlist = async (req, res) => {
   try {
-    const acount = await db.TaiKhoan.findAll();
+    const acount = await db.TaiKhoan.findAll({
+      where: { TenTaiKhoan: { [Op.ne]: null } },
+    });
     if (!acount) {
       return res.status(404).json({
         success: false,
