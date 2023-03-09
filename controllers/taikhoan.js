@@ -2,6 +2,7 @@ const db = require("../models");
 const TaiKhoan = require("../models/taikhoan");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { ReE, SS } = require("./util.service");
 require("dotenv").config();
 
 // danh sach cac tai khoan
@@ -166,3 +167,13 @@ exports.acountUnlock = async (req, res) => {
 };
 
 // Xoa tai khoan
+
+// danh sach quyen
+exports.getQuyen = async (req, res) => {
+  try {
+    const x = await db.Quyen.findAll({});
+    return SS(res, x, 200);
+  } catch (error) {
+    return ReE(res, 500, error);
+  }
+};

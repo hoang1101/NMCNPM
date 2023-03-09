@@ -4,6 +4,7 @@ const {
   acountEdit,
   acountLock,
   acountUnlock,
+  getQuyen,
 } = require("../controllers/taikhoan");
 const { verifyAdmin } = require("../middleware/middleware");
 
@@ -15,5 +16,5 @@ router.put("/update/:MaNV", acountEdit);
 
 router.put("/acountlock/:MaNV", acountLock);
 router.put("/acountunlock/:MaNV", acountUnlock);
-
+router.get("/role", getQuyen);
 module.exports = router;

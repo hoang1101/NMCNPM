@@ -26,11 +26,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       SoNgayNghi: {
         type: DataTypes.INTEGER,
-        defaultValue: 0,
       },
       TienKTKL: {
         type: DataTypes.INTEGER,
-        defaultValue: 0,
       },
       TienUng: {
         type: DataTypes.INTEGER,
