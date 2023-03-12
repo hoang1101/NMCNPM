@@ -28,6 +28,15 @@ const {
   DSHDLD,
   DSPL,
   DSKTKL,
+  TKNVNL,
+  TKNV,
+  TKNVSHH,
+  TKNVHV,
+  TKNVCV,
+  huyHDLD,
+  bohuyHDLD,
+  DSHDLDHH,
+  KT,
 } = require("../controllers/manager");
 const { verifyManager } = require("../middleware/middleware");
 
@@ -65,7 +74,10 @@ router.get("/DSKTKL", DSKTKL);
 
 router.post("/createHDLD", createHDLD);
 router.put("/editHDLD/:MaHDLD", editHDLD);
+router.put("/huyHDLD/:MaHDLD", huyHDLD);
+router.put("/bohuyHDLD/:MaHDLD", bohuyHDLD);
 router.get("/DSHDLD", DSHDLD);
+router.get("/DSHDLDHH", DSHDLDHH);
 
 //PhieuLuong
 router.post("/createPL", createPL);
@@ -81,5 +93,11 @@ router.get("/NVCHD", NVCHD);
 router.get("/NVNIF", NVNIF);
 
 // nhan vien chua co hop dong hoac het hop dong
-
+router.get("/TKNVNL", TKNVNL);
+router.get("/TKNV", TKNV);
+router.get("/TKNVSHH", TKNVSHH);
+router.get("/TKNVHV/:MaHocVan", TKNVHV);
+router.get("/TKNVCV/:MaChucVu", TKNVCV);
+// nhan vien chua co hop dong hoac het
+router.get("/TKCC", KT);
 module.exports = router;

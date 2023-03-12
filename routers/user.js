@@ -4,6 +4,7 @@ const {
   DSKTKLNV,
   info,
   editInfo,
+  DSHDHDNV,
 } = require("../controllers/manager");
 
 const { verifyAdmin } = require("../middleware/middleware");
@@ -19,5 +20,6 @@ router.get("/DSKTKLNV/:MaNV", DSKTKLNV);
 router.get("/info/:MaNV", info);
 // chinh sau thong tin nhan vien
 router.put("/editIF/:MaNV", editInfo);
-
+// danh sach cac hop dong bi huy
+router.get("/DSHDBH/:MaNV", DSHDHDNV);
 module.exports = router;

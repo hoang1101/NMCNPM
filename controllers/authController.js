@@ -6,7 +6,7 @@ require("dotenv").config();
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
 
-exports.registerService = ({ TenTaiKhoan, MatKhau, MaQuyen }) =>
+exports.registerService = ({ TenTaiKhoan, MaQuyen }) =>
   new Promise(async (resolve, reject) => {
     try {
       // const column = await db.TaiKhoan.describe();
@@ -19,9 +19,9 @@ exports.registerService = ({ TenTaiKhoan, MatKhau, MaQuyen }) =>
         },
         defaults: {
           TenTaiKhoan,
-          MatKhau: hashPassword(MatKhau),
+          MatKhau: hashPassword(TenTaiKhoan),
           MaQuyen,
-          HoatDong: "1",
+          HoatDong: 1,
         },
       });
 

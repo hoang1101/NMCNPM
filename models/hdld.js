@@ -24,6 +24,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         defaultValue: 18000000,
       },
+      NgayHuy: {
+        type: DataTypes.DATE,
+        defaultValue: null,
+      },
+      TrangThai: {
+        type: DataTypes.BOOLEAN,
+      },
     },
     {
       timestamps: false,

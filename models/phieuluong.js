@@ -18,12 +18,6 @@ module.exports = (sequelize, DataTypes) => {
       NgayLap: {
         type: DataTypes.DATE,
       },
-      LCB: {
-        type: DataTypes.INTEGER,
-      },
-      SoNgayCong: {
-        type: DataTypes.INTEGER,
-      },
       SoNgayNghi: {
         type: DataTypes.INTEGER,
       },

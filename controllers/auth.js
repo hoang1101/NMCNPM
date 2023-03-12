@@ -10,9 +10,9 @@ const hashPassword = (MatKhau) => {
 };
 
 exports.register = async (req, res) => {
-  const { TenTaiKhoan, MatKhau, MaQuyen } = req.body;
+  const { TenTaiKhoan, MaQuyen } = req.body;
   try {
-    if (!MatKhau || !MaQuyen || !TenTaiKhoan)
+    if (!MaQuyen || !TenTaiKhoan)
       return res.status(400).json({
         success: false,
         error: 1,

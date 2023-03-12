@@ -10,7 +10,7 @@ const { verifyAdmin } = require("../middleware/middleware");
 
 const router = require("express").Router();
 
-router.post("/register", verifyAdmin, register);
+router.post("/register", register);
 router.get("/acountlist", acountlist);
 router.put("/update/:MaNV", acountEdit);
 

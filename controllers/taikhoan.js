@@ -91,31 +91,57 @@ exports.acountLock = async (req, res) => {
         msg: "Missing Input!",
       });
     }
-    let taikhoan = await db.TaiKhoan.findOne({
+    const x = await db.NhanVien.findOne({
+      include: {
+        model: db.HDLD,
+        as: "hdld",
+        where: {
+          [Op.or]: [
+            { NgayKetThuc: { [Op.lt]: new Date() } },
+            {
+              TrangThai: 0,
+            },
+          ],
+        },
+      },
       where: {
         MaNV,
       },
     });
-    if (!taikhoan) {
-      return res.status(404).json({
-        success: false,
-        msg: "Not Found",
+    console.log(x);
+    if (x !== null) {
+      let taikhoan = await db.TaiKhoan.findOne({
+        where: {
+          MaNV,
+        },
+      });
+      console.log(taikhoan);
+      if (!taikhoan) {
+        return res.status(404).json({
+          success: false,
+          msg: "Not Found",
+        });
+      } else {
+        taikhoan = await db.TaiKhoan.update(
+          {
+            HoatDong: "0",
+          },
+          {
+            where: {
+              MaNV,
+            },
+          }
+        );
+      }
+      return res.status(200).json({
+        success: true,
+        // data: taikhoan,
       });
     } else {
-      taikhoan = await db.TaiKhoan.update(
-        {
-          HoatDong: "0",
-        },
-        {
-          where: {
-            MaNV,
-          },
-        }
-      );
+      return res.status(200).json({
+        success: false,
+      });
     }
-    return res.status(200).json({
-      success: true,
-    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -135,31 +161,57 @@ exports.acountUnlock = async (req, res) => {
         msg: "Missing Input!",
       });
     }
-    let taikhoan = await db.TaiKhoan.findOne({
+    const x = await db.NhanVien.findOne({
+      include: {
+        model: db.HDLD,
+        as: "hdld",
+        where: {
+          [Op.or]: [
+            { NgayKetThuc: { [Op.gt]: new Date() }, NgayHuy: null },
+            {
+              TrangThai: 1,
+            },
+          ],
+        },
+      },
       where: {
         MaNV,
       },
     });
-    if (!taikhoan) {
-      return res.status(404).json({
-        success: false,
-        msg: "Not Found",
+    console.log(x);
+    if (x !== null) {
+      let taikhoan = await db.TaiKhoan.findOne({
+        where: {
+          MaNV,
+        },
+      });
+      console.log(taikhoan);
+      if (!taikhoan) {
+        return res.status(404).json({
+          success: false,
+          msg: "Not Found",
+        });
+      } else {
+        taikhoan = await db.TaiKhoan.update(
+          {
+            HoatDong: 1,
+          },
+          {
+            where: {
+              MaNV,
+            },
+          }
+        );
+      }
+      return res.status(200).json({
+        success: true,
+        // data: taikhoan,
       });
     } else {
-      taikhoan = await db.TaiKhoan.update(
-        {
-          HoatDong: "1",
-        },
-        {
-          where: {
-            MaNV,
-          },
-        }
-      );
+      return res.status(200).json({
+        success: false,
+      });
     }
-    return res.status(200).json({
-      success: true,
-    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -178,5 +230,59 @@ exports.getQuyen = async (req, res) => {
     return SS(res, x, 200);
   } catch (error) {
     return ReE(res, 500, error);
+  }
+};
+
+exports.doiMatKhau = async (req, res) => {
+  const { MaNV } = req.params;
+  const { passwordOld, passwordNew, passwordConfirm } = req.body;
+  try {
+    if (!passwordOld || !passwordNew || !passwordConfirm) {
+      return res.status(500).json({
+        success: false,
+        msg: "Missing Input!",
+      });
+    }
+
+    let taikhoan = await db.TaiKhoan.findOne({ MaNV });
+    // console.log(taikhoan);
+
+    const isPassword = bcrypt.hashSync(req.body.passwordOld, taikhoan.MatKhau);
+
+    if (!isPassword) {
+      return res.status(400).json({
+        success: false,
+        msg: "Sai mat khau!",
+      });
+    } else {
+      if (req.body.passwordNew !== req.body.passwordConfirm) {
+        return res.status(400).json({
+          success: false,
+          msg: "Mat khau moi khong khop!",
+        });
+      } else {
+        taikhoan = await db.TaiKhoan.update(
+          {
+            MatKhau: hashPassword(passwordNew),
+          },
+          {
+            where: {
+              MaNV,
+            },
+          }
+        );
+
+        return res.status(200).json({
+          success: true,
+          msg: "Thay doi mat khau thanh cong",
+        });
+      }
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      err: -1,
+      msg: "Fail at auth controller: " + error,
+    });
   }
 };

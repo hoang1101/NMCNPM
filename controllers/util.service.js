@@ -7,6 +7,7 @@ module.exports.ReE = function (res, err, text) {
 //trả về Success Web Response
 module.exports.ReS = function (res, stt, text) {
   // Success Web Response
+  console.log(text);
   return res.json({ success: true, code: stt, msg: text });
 };
 //trả trực tiếp về lỗi
@@ -24,5 +25,18 @@ module.exports.SS = function (res, data, satus = 200) {
     send_data = Object.assign(data, send_data); //merge the objects
   }
   if (typeof code !== "undefined") res.satus = satus;
+  return res.json(send_data);
+};
+
+module.exports.TT = function (res, data, statuscode = 200) {
+  // Success Web Response
+  let send_data = { success: true };
+
+  if (typeof data == "object") {
+    send_data = Object.assign(data, send_data); //merge the objects
+  }
+
+  if (typeof code !== "undefined") res.statusCode = statuscode;
+
   return res.json(send_data);
 };
