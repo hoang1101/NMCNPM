@@ -81,6 +81,53 @@ exports.acountEdit = async (req, res) => {
   }
 };
 
+// tao tai khoan
+exports.indexacount = async (req, res) => {
+  try {
+    const { MaNV } = req.params;
+    const { TenTaiKhoan, MatKhau, MaQuyen } = req.body;
+    if (!TenTaiKhoan || !MaQuyen) {
+      return res.status(500).json({
+        success: false,
+        msg: "Missing Input!",
+      });
+    }
+    let taikhoan = await db.TaiKhoan.findOne({
+      where: {
+        MaNV,
+      },
+    });
+    if (!taikhoan) {
+      return res.status(404).json({
+        success: false,
+        msg: "Not Found",
+      });
+    } else {
+      taikhoan = await db.TaiKhoan.update(
+        {
+          TenTaiKhoan,
+          MatKhau: hashPassword(TenTaiKhoan),
+          MaQuyen,
+        },
+        {
+          where: {
+            MaNV: MaNV,
+          },
+        }
+      );
+    }
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: -1,
+      msg: "Fail at auth controller: " + error,
+    });
+  }
+};
+
 // khoa mot tai khoan
 exports.acountLock = async (req, res) => {
   try {
@@ -96,10 +143,10 @@ exports.acountLock = async (req, res) => {
         model: db.HDLD,
         as: "hdld",
         where: {
-          [Op.or]: [
-            { NgayKetThuc: { [Op.lt]: new Date() } },
+          [Op.and]: [
+            { NgayKetThuc: { [Op.gt]: new Date() } },
             {
-              TrangThai: 0,
+              TrangThai: 1,
             },
           ],
         },
@@ -108,20 +155,21 @@ exports.acountLock = async (req, res) => {
         MaNV,
       },
     });
-    console.log(x);
-    if (x !== null) {
+    // console.log(x);
+    if (x === null) {
       let taikhoan = await db.TaiKhoan.findOne({
         where: {
           MaNV,
         },
       });
-      console.log(taikhoan);
-      if (!taikhoan) {
+      const kt = taikhoan.MaQuyen;
+      console.log(taikhoan.MaQuyen);
+      if (!taikhoan || kt === 1) {
         return res.status(404).json({
           success: false,
           msg: "Not Found",
         });
-      } else {
+      } else if (taikhoan && kt !== 1) {
         taikhoan = await db.TaiKhoan.update(
           {
             HoatDong: "0",
@@ -166,7 +214,7 @@ exports.acountUnlock = async (req, res) => {
         model: db.HDLD,
         as: "hdld",
         where: {
-          [Op.or]: [
+          [Op.and]: [
             { NgayKetThuc: { [Op.gt]: new Date() }, NgayHuy: null },
             {
               TrangThai: 1,

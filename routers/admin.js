@@ -5,12 +5,14 @@ const {
   acountLock,
   acountUnlock,
   getQuyen,
+  indexacount,
 } = require("../controllers/taikhoan");
 const { verifyAdmin } = require("../middleware/middleware");
 
 const router = require("express").Router();
 
 router.post("/register", register);
+router.put("/register/:MaNV", indexacount);
 router.get("/acountlist", acountlist);
 router.put("/update/:MaNV", acountEdit);
 

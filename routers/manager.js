@@ -37,6 +37,8 @@ const {
   bohuyHDLD,
   DSHDLDHH,
   KT,
+  TKLNV,
+  TENNV,
 } = require("../controllers/manager");
 const { verifyManager } = require("../middleware/middleware");
 
@@ -100,4 +102,8 @@ router.get("/TKNVHV/:MaHocVan", TKNVHV);
 router.get("/TKNVCV/:MaChucVu", TKNVCV);
 // nhan vien chua co hop dong hoac het
 router.get("/TKCC", KT);
+
+// thống kê lương nhân viên
+router.get("/TK/:MaNV/:NamTL", TKLNV);
+router.get("/TENNV", TENNV);
 module.exports = router;
