@@ -1,23 +1,10 @@
 {
   "development": {
-    "username": "root",
-    "password": "123456",
-    "database": "jwtdb",
-    "host": "localhost",
-    "dialect": "mysql"
-  },
-  "test": {
-    "username": "root",
-    "password": null,
-    "database": "database_test",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
-  },
-  "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": "yvRtxDVRVwH9axL.root",
+    "password": "msTYDU1BkR1mtGZp",
+    "database": "qlnv",
+    "host": "gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
+    "dialect": "mysql",
+    "port": 4000
   }
 }

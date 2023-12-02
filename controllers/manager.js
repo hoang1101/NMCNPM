@@ -1648,7 +1648,7 @@ exports.TKNVSHH = async (req, res) => {
               {
                 NgayKetThuc: {
                   // [Op.gt]: new Date(),
-                  [Op.lt]: new Date(new Date(1681100500000)),
+                  [Op.lt]: new Date(new Date(1690760500000)),
                 },
               },
             ],
